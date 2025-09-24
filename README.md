@@ -16,6 +16,28 @@ It is inspired by **PyTorch** and **Tinygrad**, offering a balance between simpl
 
 ---
 
+```python
+from simplegrad import Tensor
+
+# --------------------------
+# Tensor operations
+# --------------------------
+a = Tensor([[1, 2, 3]], requires_grad=True)
+b = Tensor([[2, 1, 0]], requires_grad=True)
+c = a + b
+d = a * b
+e = d.sum()
+
+print("c:", c)
+print("d:", d)
+print("e:", e)
+
+# Backward pass
+e.backward()
+print("grad a:", a.grad)
+print("grad b:", b.grad)
+
+
 ## Installation
 
 Clone the repository and install in editable mode:
