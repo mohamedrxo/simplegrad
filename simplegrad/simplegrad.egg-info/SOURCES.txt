@@ -1,0 +1,6 @@
+setup.py
+simplegrad.egg-info/PKG-INFO
+simplegrad.egg-info/SOURCES.txt
+simplegrad.egg-info/dependency_links.txt
+simplegrad.egg-info/requires.txt
+simplegrad.egg-info/top_level.txt

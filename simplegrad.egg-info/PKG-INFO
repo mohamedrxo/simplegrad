@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: simplegrad
+Version: 0.1.0
+Summary: A minimal autograd engine built from scratch
+Author: Mohamed Rachoum
+Requires-Python: >=3.7
+Requires-Dist: numpy
+Dynamic: author
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
