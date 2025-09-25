@@ -1,6 +1,8 @@
 README.md
 setup.py
 simplegrad/__init__.py
+simplegrad/losses.py
+simplegrad/optim.py
 simplegrad/tensor.py
 simplegrad.egg-info/PKG-INFO
 simplegrad.egg-info/SOURCES.txt

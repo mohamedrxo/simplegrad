@@ -14,6 +14,9 @@ class Tensor:
 
     def __repr__(self):
         return f"Tensor(data={self.data}, grad={self.grad}, op={self._op}, label={self.label})"
+    @staticmethod
+    def randn(shape):
+        return Tensor(np.random.randn(*shape),requires_grad=True)
 
     # --- elementwise ops ---
     def __add__(self, other):
