@@ -17,6 +17,20 @@ class Tensor:
     @staticmethod
     def randn(shape):
         return Tensor(np.random.randn(*shape),requires_grad=True)
+    
+    @staticmethod
+    def ones(shape):
+        return Tensor(np.ones(shape),requires_grad=True)
+    @staticmethod
+    def zeros(shape):
+        return Tensor(np.zeros(shape),requires_grad=True)
+    @staticmethod 
+    def eye(shape):
+        return Tensor(np.eye(shape),requires_grad=True)
+    @staticmethod 
+    def arange(start,stop,step=1):
+        return Tensor(np.arange(start,stop,step),requires_grad=True)
+    
 
     # --- elementwise ops ---
     def __add__(self, other):
