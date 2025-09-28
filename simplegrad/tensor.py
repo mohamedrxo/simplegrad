@@ -11,6 +11,7 @@ class Tensor:
         self._backward = lambda: None
         self.shape=self.data.shape
         self.requires_grad=requires_grad
+        self.size = self.data.size
 
     def __repr__(self):
         return f"Tensor(data={self.data}, grad={self.grad}, op={self._op}, label={self.label})"
@@ -30,6 +31,11 @@ class Tensor:
     @staticmethod 
     def arange(start,stop,step=1):
         return Tensor(np.arange(start,stop,step),requires_grad=True)
+    @staticmethod
+    def one_hotencoding(tensor,num_class):
+        encoded = np.zeros((tensor.shape[0],num_class))
+        encoded[np.arange(tensor.size), tensor] = 1
+        return Tensor(encoded,requires_grad=True)
     
 
     # --- elementwise ops ---
@@ -93,9 +99,10 @@ class Tensor:
         out = Tensor(self.data * other.data, (self, other), _op="*")
         if self.requires_grad or other.requires_grad:
             out.requires_grad=True
-
+        
         def _backward():
             # gradient wrt self
+            
             grad_self = other.data * out.grad
             while grad_self.ndim > self.data.ndim:
                 grad_self = grad_self.sum(axis=0)
@@ -146,15 +153,24 @@ class Tensor:
 
 
     # --- reductions ---
-    def sum(self):
-        out = Tensor(self.data.sum(), (self,), _op="sum")
-        if self.requires_grad :
-            out.requires_grad=True
+    def sum(self, axis=None, keepdims=False):
+        data = np.sum(self.data, axis=axis, keepdims=keepdims)
+        out = Tensor(data, (self,), _op="sum", requires_grad=self.requires_grad)
+
         def _backward():
             if self.requires_grad:
-                self.grad += np.ones_like(self.data) * out.grad
+                grad = out.grad
+                if axis is None:
+                    # grad is scalar → broadcast
+                    self.grad += np.ones_like(self.data) * grad
+                else:
+                    # reshape grad for broadcasting
+                    grad_expanded = np.expand_dims(grad, axis=axis) if not keepdims else grad
+                    self.grad += np.ones_like(self.data) * grad_expanded
+
         out._backward = _backward
         return out
+
 
     def mean(self):
         out = Tensor(self.data.mean(), (self,), _op="mean")
@@ -175,8 +191,9 @@ class Tensor:
         def _backward():
             if self.requires_grad:
                 self.grad += out.grad.dot(other.data.T)
-            if out.requires_grad:
+            if other.requires_grad:
                 other.grad += self.data.T.dot(out.grad)
+                
         out._backward = _backward
         return out
     def __matmul__(self, other):
@@ -208,17 +225,63 @@ class Tensor:
                 self.grad += out.data*(1-out.data)*out.grad
         out._backward = _backward
         return out
-    
+
     def relu(self):
-        out = Tensor(np.maximum(0,self.data), (self,), _op="relu")
-        if self.requires_grad :
-            out.requires_grad=True
+        out = Tensor(np.maximum(0, self.data), (self,), _op="relu")
+        out.requires_grad = self.requires_grad
+
         def _backward():
             if self.requires_grad:
-                self.grad += (self.data > 0).astype(float)*out.grad
+                # ReLU passes gradient only for positive inputs
+                self.grad += (self.data > 0).astype(float) * out.grad
         out._backward = _backward
         return out
     
+    def softmax(self):
+        """
+        Compute the softmax of the tensor along the last axis.
+        """
+        # shift values for numerical stability
+        x_shifted = self.data - np.max(self.data, axis=-1, keepdims=True)
+        exp_x = np.exp(x_shifted)
+        softmax_out = exp_x / np.sum(exp_x, axis=-1, keepdims=True)
+
+        out = Tensor(softmax_out, (self,), _op="softmax", requires_grad=self.requires_grad)
+
+        def _backward():
+            if self.requires_grad:
+                # Compute gradient: s * (grad - sum(s * grad))
+                grad = out.grad
+                s = softmax_out
+                # For each batch element
+                if grad.ndim == 2:
+                    for i in range(grad.shape[0]):
+                        self.grad[i] += s[i] * (grad[i] - np.sum(grad[i] * s[i]))
+                else:
+                    self.grad += s * (grad - np.sum(grad * s))
+
+        out._backward = _backward
+        return out
+    def max(self, axis=None, keepdims=False):
+        data = np.max(self.data, axis=axis, keepdims=keepdims)
+        out = Tensor(data, (self,), _op="max", requires_grad=self.requires_grad)
+
+        def _backward():
+            if self.requires_grad:
+                grad = np.zeros_like(self.data)
+                mask = (self.data == out.data)
+                if axis is None:
+                    grad[mask] = out.grad
+                else:
+                    grad += (mask * np.expand_dims(out.grad, axis=axis))
+                self.grad += grad
+
+        out._backward = _backward
+        return out
+
+    def item(self):
+        return self.data
+
     def tanh(self):
         out = Tensor(np.tanh(self.data), (self,), _op="tanh")
         if self.requires_grad :
