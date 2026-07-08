@@ -17,7 +17,7 @@ It is inspired by **PyTorch** and **Tinygrad**, offering a balance between simpl
 ---
 
 ```python
-from simplegrad import Tensor
+from simplegrade import Tensor
 
 # --------------------------
 # Tensor operations

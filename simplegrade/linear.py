@@ -1,5 +1,5 @@
 import numpy as np
-from simplegrad import Tensor
+from simplegrade import Tensor
 
 # working version
 class Linear:
