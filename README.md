@@ -1,6 +1,6 @@
-# SimpleGrad
+# SimpleGrade
 
-**SimpleGrad** is a lightweight Python library for automatic differentiation and neural networks.  
+**SimpleGrade** is a lightweight Python library for automatic differentiation and neural networks.  
 It is inspired by **PyTorch** and **Tinygrad**, offering a balance between simplicity, flexibility, and educational value.
 
 ---
