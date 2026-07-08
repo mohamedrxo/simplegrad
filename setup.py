@@ -1,11 +1,33 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r", encoding="utf-8") as f:
+    long_description = f.read()
+
 setup(
-    name="simplegrad",               # package name on PyPI
+    name="simplegrad",
     version="0.1.0",
-    description="A minimal autograd engine built from scratch",
     author="Mohamed Rachoum",
-    packages=find_packages(),        # finds all folders with __init__.py
-    install_requires=["numpy"],      # dependencies
-    python_requires=">=3.7",         # minimum Python version
+    description="A lightweight PyTorch-like autograd library built from scratch",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/mohamedrxo/simplegrad",  # Remplacez par votre dépôt
+    packages=find_packages(),
+    install_requires=[
+        "numpy",
+    ],
+    python_requires=">=3.7",
+    license="MIT",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    ],
+    keywords=[
+        "autograd",
+        "deep-learning",
+        "machine-learning",
+        "pytorch",
+        "neural-networks",
+    ],
 )
