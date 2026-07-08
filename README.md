@@ -43,6 +43,4 @@ print("grad b:", b.grad)
 Clone the repository and install in editable mode:
 
 ```bash
-git clone https://github.com/mohamedrxo/simplegrad.git
-cd simplegrad
-pip install -e .
+pip install simplegrade
